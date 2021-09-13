@@ -24,6 +24,8 @@ import random
 import cv2
 matplotlib.use('Agg')
 
+PLOT_PATH = '/share/cp/projects/concept_whitening/plots/' # todo: maybe move to config
+
 from train_places import AverageMeter, accuracy
 
 import torch
@@ -59,7 +61,7 @@ def plot_concept_top50(args, val_loader, model, whitened_layers, print_other = F
     # switch to evaluate mode
     model.eval()
     from shutil import copyfile
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/'
     if not os.path.exists(dst):
         os.mkdir(dst)
     layer_list = whitened_layers.split(',')
@@ -232,7 +234,6 @@ def get_layer_representation(args, val_loader, layer, cpt_idx):
 # This method obtains the vector length of a representation (distance to origin)
 # Can choose resnet_cw or resnet_original
 def get_representation_distance_to_center(args, val_loader, layer, arch='resnet_cw'):
-    # dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + arch + str(args.depth) + '/distance_to_center/'
     # if not os.path.exists(dst):
     #     os.mkdir(dst)
     model = load_resnet_model(args, arch=arch, depth=18, whitened_layer=layer)
@@ -305,7 +306,7 @@ def get_representation_distance_to_center(args, val_loader, layer, arch='resnet_
 
 # This method compares the intra concept group dot product with inter concept group dot product
 def intra_concept_dot_product_vs_inter_concept_dot_product(args, conceptdir, layer, plot_cpt = ['airplane','bed','person'], activation_mode = 'mean', arch='resnet_cw', dataset = 'places365'):
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/inner_product/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/inner_product/'
     if not os.path.exists(dst):
         os.mkdir(dst)
     normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -422,7 +423,7 @@ def intra_concept_dot_product_vs_inter_concept_dot_product(args, conceptdir, lay
     This function plots the relative activations of a image on two different concepts. 
 '''
 def plot_trajectory(args, val_loader, whitened_layers, plot_cpt = ['airplane','bed']):
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/trajectory_all/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/trajectory_all/'
     if not os.path.exists(dst):
         os.mkdir(dst)
     concepts = args.concepts.split(',')
@@ -482,8 +483,7 @@ def plot_trajectory(args, val_loader, whitened_layers, plot_cpt = ['airplane','b
     auc score is computed with respect to label
 '''
 def plot_auc_cw(args, conceptdir, whitened_layers, plot_cpt = ['airplane','bed','person'], activation_mode = 'pool_max', dataset = 'places365'):
-    # dst = './plot/' + args.arch + str(args.depth) + '/auc/cw/'
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/auc/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/auc/'
     if not os.path.exists(dst):
         os.mkdir(dst)
     dst += 'cw/'
@@ -606,8 +606,7 @@ def plot_auc_cw(args, conceptdir, whitened_layers, plot_cpt = ['airplane','bed',
     Better separated concept class representations (output of BN in resnet blocks) should produce greater AUC.
 '''
 def plot_auc_lm(args, model, concept_loaders, train_loader, conceptdir, whitened_layers, plot_cpt = ['airplane', 'bed', 'person'], model_type = 'svm'):
-    # dst = './plot/' + 'resnet_cw' + str(args.depth) + '/auc/tcav/'
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/auc/tcav/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/auc/tcav/'
     if not os.path.exists(dst):
         os.mkdir(dst)
     
@@ -735,8 +734,7 @@ def plot_auc_lm(args, model, concept_loaders, train_loader, conceptdir, whitened
     best represents the concept.
 '''
 def plot_auc_filter(args, model, conceptdir, whitened_layers, plot_cpt = ['airplane', 'bed', 'person'], activation_mode = 'pool_max'):
-    # dst = './plot/' + 'resnet_cw' + str(args.depth) + '/auc/filter/'
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/auc/filter/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/auc/filter/'
     if not os.path.exists(dst):
         os.mkdir(dst)
     
@@ -842,7 +840,7 @@ def plot_auc_filter(args, model, conceptdir, whitened_layers, plot_cpt = ['airpl
     return aucs
 
 def plot_auc(args, aucs_cw, aucs_svm, aucs_lr, aucs_filter, plot_cpt = ['airplane', 'bed', 'person']):
-    folder = './plot/' + '_'.join(args.concepts.split(',')) + '/' + 'resnet_cw' + str(args.depth) + '/auc/'
+    folder = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + 'resnet_cw' + str(args.depth) + '/auc/'
     if not os.path.exists(folder):
         os.mkdir(folder)
     aucs_cw = np.load(folder + 'cw/' + 'aucs_cw.npy')
@@ -870,7 +868,7 @@ def plot_auc(args, aucs_cw, aucs_svm, aucs_lr, aucs_filter, plot_cpt = ['airplan
         plt.savefig('{}/{}.jpg'.format(folder,cpt))    
 
 def plot_top10(args, plot_cpt = ['airplane', 'bed', 'person'], layer = 1):
-    folder = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/' + str(layer) + '_rot_cw/'
+    folder = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/' + str(layer) + '_rot_cw/'
 
     fig, axes = plt.subplots(figsize=(30, 3*len(plot_cpt)) , nrows=len(plot_cpt), ncols=10)
 
@@ -891,7 +889,7 @@ def plot_top10(args, plot_cpt = ['airplane', 'bed', 'person'], layer = 1):
 
 def plot_concept_representation(args, val_loader, model, whitened_layers, plot_cpt = ['airplane','bed'], activation_mode = 'mean'):    
     with torch.no_grad():
-        dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/representation/'
+        dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) +'/representation/'
         if not os.path.exists(dst):
             os.mkdir(dst)
         model.eval()
@@ -1007,7 +1005,7 @@ def plot_concept_representation(args, val_loader, model, whitened_layers, plot_c
 
 def plot_correlation(args, val_loader, model, layer):
     with torch.no_grad():
-        dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/'
+        dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/'
         if not os.path.exists(dst):
             os.mkdir(dst)
         dst = dst + 'correlation_matrix/'
@@ -1182,8 +1180,7 @@ def concept_gradient_importance(args, val_loader, layer, criterion, arch='resnet
 
 
 def saliency_map_class(args, val_loader, layer, arch='resnet_cw', dataset='isic'):
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/saliency_map/'
-    # dst = '/usr/xtmp/zhichen/temp_plots/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/saliency_map/'
     try:
         os.mkdir(dst)
     except:
@@ -1221,8 +1218,7 @@ def saliency_map_class(args, val_loader, layer, arch='resnet_cw', dataset='isic'
         plt.close()
 
 def saliency_map_concept(args, val_loader, layer, arch='resnet_cw', dataset='isic', num_concepts=7):
-    dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/saliency_map_concept/'
-    # dst = '/usr/xtmp/zhichen/temp_plots/'
+    dst = PLOT_PATH + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/saliency_map_concept/'
     try:
         os.mkdir(dst)
     except:
@@ -1278,8 +1274,7 @@ def saliency_map_concept(args, val_loader, layer, arch='resnet_cw', dataset='isi
             outputs = []
 
 def saliency_map_concept_cover(args, val_loader, layer, arch='resnet_cw', dataset='isic', num_concepts=7):
-    # dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/saliency_map_concept_cover_fine_grain_2/'
-    dst = '/usr/xtmp/zhichen/temp_plots_layer1_3/'
+    dst = PLOT_PATH + 'temp_plots_layer1_3/'
     try:
         os.mkdir(dst)
     except:
@@ -1374,8 +1369,7 @@ def saliency_map_concept_cover(args, val_loader, layer, arch='resnet_cw', datase
                 print("saved: " + str(j))
 
 def saliency_map_concept_cover_2(args, val_loader, layer, arch='resnet_cw', dataset='isic', num_concepts=7):
-    # dst = './plot/' + '_'.join(args.concepts.split(',')) + '/' + args.arch + str(args.depth) + '/saliency_map_concept_cover_fine_grain_2/'
-    dst = '/usr/xtmp/zhichen/temp_plots_isic_3/'
+    dst = PLOT_PATH + 'temp_plots_isic_3/'
     try:
         os.mkdir(dst)
     except:

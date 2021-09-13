@@ -1,11 +1,6 @@
 import argparse
-import os
 import sys
-import gc
-import shutil
 import time
-import random
-import numpy as np
 
 import torch
 import torch.nn as nn
@@ -162,8 +157,10 @@ def main():
         batch_size=args.batch_size, shuffle=True,
         num_workers=args.workers, pin_memory=False)
 
+    # '/usr/xtmp/zhichen/ConceptWhitening_git/ConceptWhitening/plot/airplane_bed_bench_boat_book_horse_person/resnet_cw18/1_rot_cw_top5'
+    image_folder = PLOT_PATH + 'airplane_bed_bench_boat_book_horse_person/resnet_cw18/1_rot_cw_top5'
     val_loader_2 = torch.utils.data.DataLoader(
-        datasets.ImageFolder('/usr/xtmp/zhichen/ConceptWhitening_git/ConceptWhitening/plot/airplane_bed_bench_boat_book_horse_person/resnet_cw18/1_rot_cw_top5', transforms.Compose([
+        datasets.ImageFolder(image_folder, transforms.Compose([
             transforms.Scale(256),
             transforms.CenterCrop(224),
             transforms.ToTensor(),
