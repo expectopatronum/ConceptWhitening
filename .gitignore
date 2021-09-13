@@ -2,3 +2,4 @@
 plot/*
 checkpoints/*
 *.out
+.idea
